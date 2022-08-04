@@ -25,13 +25,24 @@ public:
     // Запрещаем копирование
     ArrayPtr(const ArrayPtr&) = delete;
 
-    ~ArrayPtr() {
-        delete[] raw_ptr_;
-        raw_ptr_ = nullptr;
-    }
-
     // Запрещаем присваивание
-    ArrayPtr& operator=(const ArrayPtr&) = delete;
+    ArrayPtr<Type>& operator=(const ArrayPtr<Type>& raw) = delete;
+
+    //Конструктор из временного объекта
+	ArrayPtr(ArrayPtr<Type>&& raw){
+		raw_ptr_ = std::move(raw.raw_ptr_);
+	}
+
+    //Присвоение аременного объекта
+	ArrayPtr<Type>& operator=(ArrayPtr<Type>&& raw){
+		raw_ptr_ = raw.raw_ptr_;
+		return *(this);
+	}
+
+	~ArrayPtr() {
+		delete[] raw_ptr_;
+		raw_ptr_ = nullptr;
+	}
 
     // Прекращает владением массивом в памяти, возвращает значение адреса массива
     // После вызова метода указатель на массив должен обнулиться
@@ -65,11 +76,9 @@ public:
     }
 
     // Обменивается значениям указателя на массив с объектом other
-    void Swap(ArrayPtr& other) noexcept {
-    	Type* temp = other.Get();
-    	other.raw_ptr_ = raw_ptr_;
-    	raw_ptr_ = temp;
-    }
+	void Swap(ArrayPtr& other) noexcept {
+		std::swap(other.raw_ptr_, raw_ptr_);
+	}
 
 private:
     Type* raw_ptr_ = nullptr;
