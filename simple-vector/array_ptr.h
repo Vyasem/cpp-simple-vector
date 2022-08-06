@@ -12,14 +12,14 @@ public:
     // Создаёт в куче массив из size элементов типа Type.
     // Если size == 0, поле raw_ptr_ должно быть равно nullptr
     explicit ArrayPtr(size_t size) {
-    	if(size > 0){
-    		raw_ptr_ =  new Type[size];
-    	}
+        if (size > 0) {
+            raw_ptr_ = new Type[size];
+        }
     }
 
     // Конструктор из сырого указателя, хранящего адрес массива в куче либо nullptr
     explicit ArrayPtr(Type* raw_ptr) noexcept {
-    	raw_ptr_ = raw_ptr;
+        raw_ptr_ = raw_ptr;
     }
 
     // Запрещаем копирование
@@ -29,20 +29,23 @@ public:
     ArrayPtr<Type>& operator=(const ArrayPtr<Type>& raw) = delete;
 
     //Конструктор из временного объекта
-	ArrayPtr(ArrayPtr<Type>&& raw){
-		raw_ptr_ = std::move(raw.raw_ptr_);
-	}
+    ArrayPtr(ArrayPtr<Type>&& raw) {
+        raw_ptr_ = std::move(raw.raw_ptr_);
+        raw.raw_ptr_ = nullptr;
+    }
 
     //Присвоение аременного объекта
-	ArrayPtr<Type>& operator=(ArrayPtr<Type>&& raw){
-		raw_ptr_ = raw.raw_ptr_;
-		return *(this);
-	}
+    ArrayPtr<Type>& operator=(ArrayPtr<Type>&& raw) {
+        if (this != &raw) {
+            std::swap(this, raw);
+        }
+        return *(this);
+    }
 
-	~ArrayPtr() {
-		delete[] raw_ptr_;
-		raw_ptr_ = nullptr;
-	}
+    ~ArrayPtr() {
+        delete[] raw_ptr_;
+        raw_ptr_ = nullptr;
+    }
 
     // Прекращает владением массивом в памяти, возвращает значение адреса массива
     // После вызова метода указатель на массив должен обнулиться
@@ -54,18 +57,18 @@ public:
 
     // Возвращает ссылку на элемент массива с индексом index
     Type& operator[](size_t index) noexcept {
-        return *(raw_ptr_+index);
+        return *(raw_ptr_ + index);
     }
 
     // Возвращает константную ссылку на элемент массива с индексом index
     const Type& operator[](size_t index) const noexcept {
-    	return *(raw_ptr_+index);
+        return *(raw_ptr_ + index);
     }
 
     // Возвращает true, если указатель ненулевой, и false в противном случае
     explicit operator bool() const {
-        if(raw_ptr_ == nullptr){
-        	return false;
+        if (raw_ptr_ == nullptr) {
+            return false;
         }
         return true;
     }
@@ -76,9 +79,9 @@ public:
     }
 
     // Обменивается значениям указателя на массив с объектом other
-	void Swap(ArrayPtr& other) noexcept {
-		std::swap(other.raw_ptr_, raw_ptr_);
-	}
+    void Swap(ArrayPtr& other) noexcept {
+        std::swap(other.raw_ptr_, raw_ptr_);
+    }
 
 private:
     Type* raw_ptr_ = nullptr;

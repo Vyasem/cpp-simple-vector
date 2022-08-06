@@ -38,14 +38,6 @@ SimpleVector<int> GenerateVector(size_t size) {
     return v;
 }
 
-void TestReserveConstructor() {
-    cout << "TestReserveConstructor"s << endl;
-    SimpleVector<int> v(Reserve(5));
-    assert(v.GetCapacity() == 5);
-    assert(v.IsEmpty());
-    cout << "Done!"s << endl;
-}
-
 void TestReserveMethod() {
     cout << "TestReserveMethod"s << endl;
     SimpleVector<int> v;
@@ -196,7 +188,6 @@ void TestResize(){
 }
 
 int main() {
-	TestReserveConstructor();
 	TestReserveMethod();
     TestTemporaryObjConstructor();
     TestTemporaryObjOperator();
